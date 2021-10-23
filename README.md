@@ -1,0 +1,22 @@
+# Magic Carpet
+
+## Installation
+
+```
+git clone https://github.com/Achllle/libroboclaw.git
+git clone https://github.com/drewnoakes/joystick.git
+cp joystick_cml.txt joystick/CMakeLists.txt
+mkdir build && cd build
+cmake ..
+cmake --build .
+```
+
+## Run
+
+```
+./bin/carpetfly
+```
+will attempt to connect to the joystick at `/dev/input/js0` and roboclaw at
+`/dev/serial0` with baud rate 115200 and address 128.
+
+Move the joystick axes to send duty commands to the motors.

@@ -1,0 +1,3 @@
+// the configured options and settings for magiccarpet
+#define magiccarpet_VERSION_MAJOR @magiccarpet_VERSION_MAJOR@
+#define magiccarpet_VERSION_MINOR @magiccarpet_VERSION_MINOR@
