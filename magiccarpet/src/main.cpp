@@ -47,9 +47,13 @@ int main(int argc, char *argv[]) {
       }
     }
     // write duty cycle to roboclaw
-    roboclaw_conns->set_duty(addr, duty);
+    try {
+      roboclaw_conns->set_duty(addr, duty);
+    }
+    catch (const timeout_exception&) {
+      std::cout << "caught disconnect." << std::endl;
+    }
   }
-
 
   return 0;
 }

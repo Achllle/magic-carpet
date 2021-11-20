@@ -5,7 +5,7 @@
 ```
 git clone https://github.com/Achllle/libroboclaw.git
 git clone https://github.com/drewnoakes/joystick.git
-cp joystick_cml.txt joystick/CMakeLists.txt
+cp magic-carpet/joystick_cml.txt joystick/CMakeLists.txt
 mkdir build && cd build
 cmake ..
 cmake --build .
