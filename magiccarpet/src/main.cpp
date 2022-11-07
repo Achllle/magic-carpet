@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
 
   // initialize vars
   std::pair<int, int> duty(0, 0);
+  bool sync_mode = false;
 
   while (true)
   {
@@ -37,12 +38,23 @@ int main(int argc, char *argv[]) {
     {
       if (event.isAxis())
       {
-        printf("Axis %u is at position %d\n", event.number, event.value);
         if (event.number == 1) {
+          printf("Axis %u is at position %d\n", event.number, event.value);
           duty.first = event.value;
+          if (sync_mode)
+            duty.second = event.value;
         }
-        if (event.number == 4) {
+        if (event.number == 4 && !sync_mode) {
+          printf("Axis %u is at position %d\n", event.number, event.value);
           duty.second = event.value;
+        }
+      }
+      else if (event.isButton()) {
+        printf("Button %u is %s\n", event.number, event.value == 0 ? "up" : "down");
+        if (event.number == 1 && event.value != 0)
+        {
+          sync_mode = !sync_mode;  // flip value
+          printf("Sync mode is %s\n", sync_mode == false ? "off" : "on");
         }
       }
     }
