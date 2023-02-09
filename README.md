@@ -5,7 +5,7 @@
 Clone this repo, cd magic-carpet
 
 ```
-sudo apt-get install libboost-all-dev
+sudo apt-get install libboost-all-dev libgtest-dev cmake
 git clone https://github.com/Achllle/libroboclaw.git
 git clone https://github.com/drewnoakes/joystick.git
 cp magic-carpet/joystick_cml.txt joystick/CMakeLists.txt
