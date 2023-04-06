@@ -40,13 +40,13 @@ int main(int argc, char *argv[]) {
       {
         if (event.number == 1) {
           printf("Axis %u is at position %d\n", event.number, event.value);
-          duty.first = event.value;
+          duty.second = event.value;
           if (sync_mode)
-            duty.second = event.value;
+            duty.first = -event.value;
         }
         if (event.number == 4 && !sync_mode) {
           printf("Axis %u is at position %d\n", event.number, event.value);
-          duty.second = event.value;
+          duty.first = -event.value;
         }
       }
       else if (event.isButton()) {
