@@ -6,6 +6,14 @@ int main(int argc, char *argv[]) {
   std::string serial_port = "/dev/serial0";
   unsigned int baudrate = 115200;
   unsigned int addr = 128;
+  // xbox controller
+  // unsigned int left_axis = 1;
+  // unsigned int right_axis = 4;
+  // unsigned int sync_mode_button = 1;
+  // spektrum controller
+  unsigned int left_axis = 1;
+  unsigned int right_axis = 3;
+  unsigned int sync_mode_button = 0;
 
   // initialize roboclaw
   libroboclaw::driver *roboclaw_conns;
@@ -38,20 +46,21 @@ int main(int argc, char *argv[]) {
     {
       if (event.isAxis())
       {
-        if (event.number == 1) {
+        // printf("Axis %u is at position %d\n", event.number, event.value);
+        if (event.number == left_axis) {
           printf("Axis %u is at position %d\n", event.number, event.value);
-          duty.second = event.value;
+          duty.second = -event.value;
           if (sync_mode)
-            duty.first = -event.value;
+            duty.first = event.value;
         }
-        if (event.number == 4 && !sync_mode) {
+        if (event.number == right_axis && !sync_mode) {
           printf("Axis %u is at position %d\n", event.number, event.value);
-          duty.first = -event.value;
+          duty.first = event.value;
         }
       }
       else if (event.isButton()) {
         printf("Button %u is %s\n", event.number, event.value == 0 ? "up" : "down");
-        if (event.number == 1 && event.value != 0)
+        if (event.number == sync_mode_button && event.value != 0)
         {
           sync_mode = !sync_mode;  // flip value
           printf("Sync mode is %s\n", sync_mode == false ? "off" : "on");
