@@ -1,18 +1,33 @@
 #include <iostream>
 #include "libroboclaw/roboclaw_driver.h"
 #include "joystick.hh"
+#include <cstdio>
+
+int max_abs_duty = 32767;
+unsigned int max_joystick_pos = 23000;
+
+template <typename T>
+T clip(const T& n, const T& lower, const T& upper) {
+  return std::max(lower, std::min(n, upper));
+}
+
+int js_pos_to_duty(int value) {
+  return clip(int(value * static_cast<float>(max_abs_duty) / max_joystick_pos), -max_abs_duty-1, max_abs_duty);
+}
 
 int main(int argc, char *argv[]) {
   std::string serial_port = "/dev/serial0";
   unsigned int baudrate = 115200;
   unsigned int addr = 128;
+
   // xbox controller
   // unsigned int left_axis = 1;
   // unsigned int right_axis = 4;
   // unsigned int sync_mode_button = 1;
+
   // spektrum controller
-  unsigned int left_axis = 1;
-  unsigned int right_axis = 3;
+  unsigned int left_axis = 0;
+  unsigned int right_axis = 2;
   unsigned int sync_mode_button = 0;
 
   // initialize roboclaw
@@ -49,13 +64,13 @@ int main(int argc, char *argv[]) {
         // printf("Axis %u is at position %d\n", event.number, event.value);
         if (event.number == left_axis) {
           printf("Axis %u is at position %d\n", event.number, event.value);
-          duty.second = -event.value;
+          duty.second = -js_pos_to_duty(event.value);
           if (sync_mode)
-            duty.first = event.value;
+            duty.first = js_pos_to_duty(event.value);
         }
         if (event.number == right_axis && !sync_mode) {
           printf("Axis %u is at position %d\n", event.number, event.value);
-          duty.first = event.value;
+          duty.first = js_pos_to_duty(event.value);
         }
       }
       else if (event.isButton()) {
@@ -76,6 +91,9 @@ int main(int argc, char *argv[]) {
       std::cout << "caught disconnect." << std::endl;
     }
   }
+  duty.first = 0;
+  duty.second = 0;
+  roboclaw_conns->set_duty(addr, duty);
 
   return 0;
 }
