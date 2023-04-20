@@ -18,9 +18,9 @@ cmake --build .
 
 ```
 sudo cp ./magiccarpet.service /etc/systemd/system
-sudo cp ./bin/carpetfly /usr/bin
-sudo service enable magiccarpet
-sudo service start magiccarpet
+sudo cp ./build/bin/carpetfly /usr/bin
+sudo systemctl enable magiccarpet.service
+sudo service magiccarpet start
 ```
 
 ## Run
