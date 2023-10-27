@@ -7,9 +7,15 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
 
 # Define the function
-kr = 10700  # [N/mm]
+# spring 'constant' of the rope, calculated as E*A/L
+E = 960  # N/mm*2
+A = (4.7/2)**2 * np.pi  # [mm*2]
+L = 5000  # [mm]
+kr = E*A/L
+# kr = 0.8  # [N/mm]
+print(f"Using rope spring constant of {round(kr, 2)} N/mm")
 m = 35  # [kg]
-g = 9.81*10*3  # [mm/s^2]
+g = 9.81e3  # [mm/s^2]
 stair_angle = 38*np.pi/180  # [rad]
 mu_moving = 0.01  # friction of moving plate on stairs
 F = m*g*(np.sin(stair_angle) + mu_moving * np.cos(stair_angle))  # [N]
@@ -36,8 +42,26 @@ soln1_dxs = 8*F*kr/(16*(kr-1)**2 + 16*(kr-1)*kr)
 # KKT conditions
 phi_squared1 = f(soln1_ks, soln1_dxs)
 eta_squared1 = (soln1_ks/2 + 2*kr)*soln1_dxs - F
-soln1_L = T(soln1_ks, soln1_dxs)
-print(f"Solution 1: ks: {soln1_ks} N/mm, delta_x_s: {np.round(soln1_dxs, 4)} with KKT conditions phi**2 = {np.round(phi_squared1, 2)} > 0 and eta**2 = {np.round(eta_squared1, 2)} > 0, Langrangian: {soln1_L}")
+soln1_L = round(T(soln1_ks, soln1_dxs), 2)
+print(f"Solution 1: ks: {soln1_ks} N/mm, delta_x_s: {np.round(soln1_dxs, 4)} with KKT conditions phi**2 = {np.round(phi_squared1, 2)} > 0 and eta**2 = {np.round(eta_squared1, 2)} > 0, Langrangian = Tension: {soln1_L}")
+
+# ### Plot solution 1 using variable kr
+# kr = np.linspace(2, 10, 100)  # [N/mm]
+# soln1_ks = 4*(kr-1)
+# soln1_dxs = 8*F*kr/(16*(kr-1)**2 + 16*(kr-1)*kr)
+# fig = plt.figure()
+# ax = fig.add_subplot()
+# col_k = 'tab:red'
+# ax.plot(kr, soln1_ks, color=col_k)
+# ax.set_xlabel('kr', color=col_k)
+# ax.tick_params(axis='y', labelcolor=col_k)
+# ax2 = ax.twinx()
+# col_d = 'tab:blue'
+# ax2.plot(kr, soln1_dxs, color=col_d)
+# ax2.set_ylabel('optimal dxs', color=col_d)
+# ax2.tick_params(axis='y', labelcolor=col_d)
+# fig.tight_layout()
+# plt.show()
 
 ### Solution 3 ###
 soln3_ks = 2*(F - 2*(kr+1))
@@ -46,8 +70,26 @@ soln3_dxs = F/(F-2)
 phi_squared3 = f(soln3_ks, soln3_dxs)
 eta_squared3 = (soln3_ks/2 + 2*kr)*soln3_dxs - F
 nu3 = (F-4*kr)/(F-2)
-soln3_L = T(soln3_ks, soln3_dxs) - nu3 * ((soln3_ks/2 +2*kr)*soln3_dxs - F)
-print(f"Solution 3: ks: {soln3_ks} N/mm, delta_x_s: {np.round(soln3_dxs, 4)} with KKT conditions phi**2 = {np.round(phi_squared3, 2)} > 0 and eta**2 = {np.round(eta_squared3, 2)} = 0, Langrangian: {soln3_L}")
+soln3_L = round(T(soln3_ks, soln3_dxs) - nu3 * ((soln3_ks/2 +2*kr)*soln3_dxs - F), 2)
+print(f"Solution 3: ks: {soln3_ks} N/mm, delta_x_s: {np.round(soln3_dxs, 4)} with KKT conditions phi**2 = {np.round(phi_squared3, 2)} > 0 and eta**2 = {np.round(eta_squared3, 2)} = 0, Langrangian: {soln3_L}, Tension: {T(soln3_ks, soln3_dxs)}")
+
+# ### Plot solution 3 using variable kr
+# kr = np.linspace(2, 10, 100)  # [N/mm]
+# soln3_ks = 2*(F - 2*(kr+1))
+# soln3_dxs = F/(F-2)
+# fig = plt.figure()
+# ax = fig.add_subplot()
+# col_k = 'tab:red'
+# ax.plot(kr, soln3_ks, color=col_k)
+# ax.set_xlabel('kr', color=col_k)
+# ax.tick_params(axis='y', labelcolor=col_k)
+# ax2 = ax.twinx()
+# col_d = 'tab:blue'
+# ax2.plot(kr, [soln3_dxs,]*100, color=col_d)
+# ax2.set_ylabel('optimal dxs', color=col_d)
+# ax2.tick_params(axis='y', labelcolor=col_d)
+# fig.tight_layout()
+# plt.show()
 
 ### Solution 4 ###
 soln4_ks = (4 - 4*alpha * exp_mu_theta/(1-exp_mu_theta)*kr) / (alpha * exp_mu_theta/(1-exp_mu_theta) - 1)
