@@ -49,6 +49,11 @@ nu3 = (F-4*kr)/(F-2)
 soln3_L = T(soln3_ks, soln3_dxs) - nu3 * ((soln3_ks/2 +2*kr)*soln3_dxs - F)
 print(f"Solution 3: ks: {soln3_ks} N/mm, delta_x_s: {np.round(soln3_dxs, 4)} with KKT conditions phi**2 = {np.round(phi_squared3, 2)} > 0 and eta**2 = {np.round(eta_squared3, 2)} = 0, Langrangian: {soln3_L}")
 
+### Solution 4 ###
+soln4_ks = (4 - 4*alpha * exp_mu_theta/(1-exp_mu_theta)*kr) / (alpha * exp_mu_theta/(1-exp_mu_theta) - 1)
+soln4_dxs = -(alpha * exp_mu_theta/(1-exp_mu_theta) - 1)*F / (2*(kr - 1))
+print(f"Solution 4: ks: {soln4_ks} N/mm, delta_x_s: {np.round(soln4_dxs, 4)}. Invalid since ks<0")
+
 noslip = np.where(Z>5000, 5000, Z)
 noslip = np.where(noslip<0, 0, noslip)
 
