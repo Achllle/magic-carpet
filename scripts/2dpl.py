@@ -9,20 +9,20 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 # Define the function
 # spring 'constant' of the rope, calculated as E*A/L
 E = 960  # N/mm*2
-A = (4.7/2)**2 * np.pi  # [mm*2]
-L = 5000  # [mm]
+A = (4./2)**2 * np.pi  # [mm*2]
+L = 8000  # [mm]
 kr = E*A/L
 # kr = 0.8  # [N/mm]
 print(f"Using rope spring constant of {round(kr, 2)} N/mm")
 m = 35  # [kg]
-g = 9.81e3  # [mm/s^2]
+g = 9.81  # [m/s^2]
 stair_angle = 38*np.pi/180  # [rad]
-mu_moving = 0.01  # friction of moving plate on stairs
+mu_moving = 0.05  # friction of moving plate on stairs
 F = m*g*(np.sin(stair_angle) + mu_moving * np.cos(stair_angle))  # [N]
 mu_winch = 0.18
-theta = 4.5 * 2*np.pi  # [rad]
+theta = 5.5 * 2*np.pi  # [rad]
 exp_mu_theta = np.exp(mu_winch*theta)
-alpha = 1.05
+alpha = 1.1
 
 def T(ks, dxs):
     return ks/2*dxs - 4*kr/(ks+4*kr)*(-F + ks/2*dxs + 2*kr*dxs) + 2*dxs
@@ -31,8 +31,8 @@ def f(ks, dxs):
     return T(ks, dxs) - alpha * exp_mu_theta/(1-exp_mu_theta) * F
 
 # Plot the function
-ks = np.linspace(25000, 50000, 300)  # [N/mm]
-dxs = np.linspace(1, 30, 300)  # [mm]
+ks = np.linspace(0.1, 10, 100)  # [N/mm]
+dxs = np.linspace(1, 50, 100)  # [mm]
 X, Y = np.meshgrid(ks, dxs)
 Z = f(X, Y)
 
