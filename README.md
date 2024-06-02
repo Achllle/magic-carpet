@@ -97,3 +97,9 @@ jscal -s ......
 # not persisted across reboots, so store using jscal-store
 sudo jscal-store /dev/input/js0  # stored in /var/lib/joystick/joystick.state
 ```
+
+## viewing grafana dashboard
+
+From any browser on the same LAN, connect to the RPi's IP:3000 to see the Grafana dashboard connected to InfluxDB
+
+![grafana-dasboard](docs/grafana-dashboard.png)
