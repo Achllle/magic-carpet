@@ -2,6 +2,9 @@
 #include "libroboclaw/roboclaw_driver.h"
 #include "joystick.hh"
 #include <cstdio>
+#include <thread>
+#include <InfluxDBFactory.h>
+
 
 int max_abs_duty = 32767;
 unsigned int max_joystick_pos = 16000;
@@ -21,6 +24,10 @@ int main(int argc, char *argv[]) {
   std::string serial_port = "/dev/serial0";
   unsigned int baudrate = 115200;
   unsigned int addr = 128;
+
+  // Create an InfluxDB instance
+  auto db = influxdb::InfluxDBFactory::Get("http://localhost:8086?db=mydb");
+  db->createDatabaseIfNotExists();
 
   // xbox controller
   // unsigned int left_axis = 1;
@@ -57,6 +64,9 @@ int main(int argc, char *argv[]) {
     // Restrict rate
     usleep(1000);
 
+    // record data point to influxdb
+    influxdb::Point point("sensor_data");
+
     // Attempt to sample an event from the joystick
     JoystickEvent event;
     if (joystick.sample(&event))
@@ -69,10 +79,15 @@ int main(int argc, char *argv[]) {
           duty.second = js_pos_to_duty(event.value);
           if (sync_mode)
             duty.first = js_pos_to_duty(event.value);
+          point.addField("left_axis", event.value);
+          point.addField("left_duty", duty.second);
+          point.addField("right_duty", duty.first);
         }
         if (event.number == right_axis && !sync_mode) {
           printf("Axis %u is at position %d\n", event.number, event.value);
           duty.first = js_pos_to_duty(event.value);
+          point.addField("right_axis", event.value);
+          point.addField("right_duty", duty.first);
         }
       }
       else if (event.isButton()) {
@@ -84,15 +99,24 @@ int main(int argc, char *argv[]) {
         }
       }
     }
+    else {
+      continue;
+    }
+
     // write duty cycle to roboclaw
     try {
       roboclaw_conns->set_duty(addr, duty);
       // std::cout << "duty: M1: " << duty.first << ", M2:" << duty.second << std::endl;
       // std::cout << roboclaw_conns->get_error(addr) << std::endl;
+      point.addField("disconnect", false);
     }
     catch (const timeout_exception&) {
       std::cout << "caught disconnect." << std::endl;
+      point.addField("disconnect", true);
     }
+
+    // log to influxdb
+    db->write(std::move(point));
   }
   duty.first = 0;
   duty.second = 0;

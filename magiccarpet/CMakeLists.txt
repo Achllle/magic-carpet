@@ -12,6 +12,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 configure_file(magiccarpetConfig.h.in magiccarpetConfig.h)
 
 find_package(Boost 1.55.0 REQUIRED COMPONENTS system filesystem)
+find_package(InfluxDB)
 
 ############################################################
 # Create an executable
@@ -35,4 +36,5 @@ target_link_libraries(carpetfly
     PRIVATE
         libroboclaw
         joystick
+        InfluxData::InfluxDB
 )
