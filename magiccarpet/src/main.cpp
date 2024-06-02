@@ -4,18 +4,20 @@
 #include <cstdio>
 
 int max_abs_duty = 32767;
-unsigned int max_joystick_pos = 23000;
+unsigned int max_joystick_pos = 16000;
 
 template <typename T>
 T clip(const T& n, const T& lower, const T& upper) {
+  std::cout << n << ", " << lower << ", " << upper << std::endl;
   return std::max(lower, std::min(n, upper));
 }
 
 int js_pos_to_duty(int value) {
-  return clip(int(value * static_cast<float>(max_abs_duty) / max_joystick_pos), -max_abs_duty-1, max_abs_duty);
+  return clip(int(value * static_cast<float>(max_abs_duty) / max_joystick_pos), -max_abs_duty+1, max_abs_duty);
 }
 
 int main(int argc, char *argv[]) {
+  printf("Starting...");
   std::string serial_port = "/dev/serial0";
   unsigned int baudrate = 115200;
   unsigned int addr = 128;
@@ -64,7 +66,7 @@ int main(int argc, char *argv[]) {
         // printf("Axis %u is at position %d\n", event.number, event.value);
         if (event.number == left_axis) {
           printf("Axis %u is at position %d\n", event.number, event.value);
-          duty.second = -js_pos_to_duty(event.value);
+          duty.second = js_pos_to_duty(event.value);
           if (sync_mode)
             duty.first = js_pos_to_duty(event.value);
         }
@@ -85,6 +87,7 @@ int main(int argc, char *argv[]) {
     // write duty cycle to roboclaw
     try {
       roboclaw_conns->set_duty(addr, duty);
+      // std::cout << "duty: M1: " << duty.first << ", M2:" << duty.second << std::endl;
       // std::cout << roboclaw_conns->get_error(addr) << std::endl;
     }
     catch (const timeout_exception&) {
